@@ -116,13 +116,45 @@
                             <label for="contact_number"><strong>Contact Number:</strong></label>
                             <input type="text" name="contact_number" id="contact_number" class="form-control" value="{{ user_profile.contact_number }}">
                         </div>
+                        
+                        <!-- Checkbox to select password update -->
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="updatePasswordCheck" onclick="togglePasswordFields()">
+                            <label class="form-check-label" for="updatePasswordCheck">
+                                Update Password
+                            </label>
+                        </div>
+                        <!-- Existing Password Field (hidden by default) -->
+                        <div class="form-group" id="existingPasswordGroup" style="display: none;">
+                            <label for="existing_password"><strong>Existing Password:</strong></label>
+                            <input type="password" name="existing_password" id="existing_password" class="form-control">
+                        </div>
+                        
+                        <!-- New Password Field (hidden by default) -->
+                        <div class="form-group" id="newPasswordGroup" style="display: none;">
+                            <label for="new_password"><strong>New Password:</strong></label>
+                            <input type="password" name="new_password" id="new_password" class="form-control">
+                        </div>
+                        
                         <button type="submit" class="btn btn-primary">Update</button>
                     </form>
-                    
                 </div>
             </div>
         </div>
     </div>
 </div>
-            
+<script>
+function togglePasswordFields() {
+    var updateCheck = document.getElementById("updatePasswordCheck");
+    var existingPasswordGroup = document.getElementById("existingPasswordGroup");
+    var newPasswordGroup = document.getElementById("newPasswordGroup");
+    
+    if (updateCheck.checked) {
+        existingPasswordGroup.style.display = "block";
+        newPasswordGroup.style.display = "block";
+    } else {
+        existingPasswordGroup.style.display = "none";
+        newPasswordGroup.style.display = "none";
+    }
+}
 {% endblock %}
