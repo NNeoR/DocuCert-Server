@@ -19,3 +19,8 @@ pip install opencv-python
 pip install pdf2image
 #install skimage metrics for image similarity
 pip install scikit-image
+
+#Run flaak
+export FLASK_APP=main.py
+flask run
+```
