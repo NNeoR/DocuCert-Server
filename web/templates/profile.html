@@ -1,0 +1,128 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Media query for responsiveness */
+    @media (max-width: 768px) {
+    }
+    body {
+        background-color: #36454F; /* Charcoal */
+        font-size: 0.9rem;
+        font-family: Arial, sans-serif;
+    }
+    .sidebar {
+        background-color: #233040; /* Darker shade of charcoal */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar .nav-link {
+        color: #ffffff;
+    }
+    .sidebar .nav-link.active {
+        background-color: #4a6fa5; /* Active link color */
+        color: #ffffff;
+    }
+    .sidebar .nav-link:hover {
+        background-color: #4a6fa5; /* Hover link color */
+    }
+    .logout-link {
+        margin-top: auto;
+    }
+    main {
+        color: #ffffff;
+    }
+    .card {
+        background-color: #2b3e50; /* Dark card background */
+        border: none;
+    }
+    .card .card-title, .card .card-subtitle, .card .card-text {
+        color: #ffffff;
+    }
+    .card-body {
+        background-color: #2b3e50; /* Dark card body background */
+    }
+    .border-bottom {
+        border-bottom: 1px solid #4a6fa5; /* Border color */
+    }
+    .unread-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: red;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    .message-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: .25rem;
+    }
+    
+    .message-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: .25rem;
+    }
+    .message-popup {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%);
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 9999;
+    }
+    .hide {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block auth_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">User Profile</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">Profile</h1>
+                <h2 class="lead">{{ title }} {{ user_profile.last_name }}</h2>
+                <div class="grid w-full grid-cols-1 lg:grid-cols-2 gap-4">
+                    <p><strong>ID/Passport Number:</strong> {{ user_profile.id }}</p>
+                    <p><strong>Email:</strong> {{ user_profile.email }}</p>
+                    <p><strong>Contact Number:</strong> {{ user_profile.contact_number }}</p>
+                    
+                    <h3>Update Contact Details</h3>
+                    <form method="POST" action="{{ url_for('views.profile') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            <label for="email"><strong>Email:</strong></label>
+                            <input type="text" name="email" id="email" class="form-control" value="{{ user_profile.email }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_number"><strong>Contact Number:</strong></label>
+                            <input type="text" name="contact_number" id="contact_number" class="form-control" value="{{ user_profile.contact_number }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Message Detail{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #36454F; /* Charcoal */
+    }
+    .container {
+        margin-top: 50px;
+        color: #ffffff;
+    }
+    .card {
+        background-color: #2b3e50; /* Dark card background */
+        border: none;
+    }
+    .card .card-title, .card .card-subtitle, .card .card-text {
+        color: #ffffff;
+    }
+    .card-body {
+        background-color: #2b3e50; /* Dark card body background */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Message Detail</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ message.subject }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">From: {{ message.sender.username }}</h6>
+            <p class="card-text">{{ message.body }}</p>
+            <a href="{{ url_for('views.inbox') }}" class="btn btn-primary">Back to Inbox</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

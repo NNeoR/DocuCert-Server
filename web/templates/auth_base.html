@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message-popup {% if category == 'error' %}message-error{% elif category == 'success' %}message-success{% endif %}" id="message-popup-{{ loop.index }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar">
+            <div class="sidebar-sticky flex-grow-1">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.dashboard' %}active{% endif %}" href="{{ url_for('views.dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.document_certification' %}active{% endif %}" href="{{ url_for('views.document_certification') }}">
+                            <i class="fas fa-certificate"></i> Certify
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.certified_documents' %}active{% endif %}" href="{{ url_for('views.certified_documents') }}">
+                            <i class="fas fa-file-alt"></i> Documents
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.profile' %}active{% endif %}" href="{{ url_for('views.profile') }}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.inbox' %}active{% endif %}" href="{{ url_for('views.inbox') }}">
+                            <i class="fas fa-inbox"></i> Inbox{% if unread_messages_count > 0 %}<span class="unread-dot"></span>{% endif %}
+                        </a>
+                    </li>
+                    {% if current_user.type == 'Admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'views.user_management' %}active{% endif %}" href="{{ url_for('views.user_management') }}">
+                                <i class="fas fa-users-cog"></i> User Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'views.create_user' %}active{% endif %}" href="{{ url_for('views.create_user') }}">
+                                <i class="fas fa-user-plus"></i> Create User
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'views.send_message' %}active{% endif %}" href="{{ url_for('views.send_message') }}">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="nav flex-column mt-auto logout-link">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            {% block auth_content %}{% endblock %}
+            <!-- Other dashboard content... -->
+        </main>
+    </div>
+</div>
+{% endblock %}

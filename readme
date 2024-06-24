@@ -1,0 +1,21 @@
+# Step 1: Create a new directory for the project
+mkdir flask_project
+cd flask_project
+
+# Step 2: Initialize a new Python virtual environment in this directory
+python3 -m venv venv
+
+# Step 3: Activate the virtual environment
+source venv/bin/activate
+
+# Step 4: Install Flask in the virtual environment
+pip install flask
+
+#for certifying
+pip install pyopenssl
+pip install pillow
+pip install opencv-python
+#install pdf2image
+pip install pdf2image
+#install skimage metrics for image similarity
+pip install scikit-image

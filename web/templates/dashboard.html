@@ -1,0 +1,161 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media (min-width: 768px) {
+        
+    }
+    body {
+        background-color: #36454F; /* Charcoal */
+        font-size: 0.9rem;
+        font-family: Arial, sans-serif;
+    }
+    .sidebar {
+        background-color: #233040; /* Darker shade of charcoal */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar .nav-link {
+        color: #ffffff;
+    }
+    .sidebar .nav-link.active {
+        background-color: #4a6fa5; /* Active link color */
+        color: #ffffff;
+    }
+    .sidebar .nav-link:hover {
+        background-color: #4a6fa5; /* Hover link color */
+    }
+    .logout-link {
+        margin-top: auto;
+    }
+    main {
+        color: #ffffff;
+    }
+    .card {
+        background-color: #2b3e50; /* Dark card background */
+        border: none;
+    }
+    .card .card-title, .card .card-subtitle, .card .card-text {
+        color: #ffffff;
+    }
+    .card-body {
+        background-color: #2b3e50; /* Dark card body background */
+    }
+    .border-bottom {
+        border-bottom: 1px solid #4a6fa5; /* Border color */
+    }
+    .unread-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: red;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    .message-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: .25rem;
+    }
+    
+    .message-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: .25rem;
+    }
+    .message-popup {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%);
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 9999;
+    }
+    .hide {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block auth_content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Hello, {{ user_name }} 👋</h5>
+                <p class="card-text">This is your dashboard.</p>
+                <div class="grid w-full grid-cols-1 lg:grid-cols-3 gap-4 py-4">
+                    
+                    {% if user.type == 'Admin' %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Total Users</h6>
+                                <p class="card-text">{{ total_users }}</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Total Requests</h6>
+                                <p class="card-text">{{ total_requests }}</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Total Messages Sent</h6>
+                                <p class="card-text">{{ messages_sent_count }}</p>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Number of requests made</h6>
+                                <p class="card-text">{{ requests }}</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Number of approved requests</h6>
+                                <p class="card-text">{{ certified_requests }}</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Number of certified documents</h6>
+                                <p class="card-text">{{ certified_documents }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.onload = function() {
+        var popups = document.querySelectorAll('.message-popup');
+        popups.forEach(function(popup) {
+            setTimeout(function() {
+                popup.classList.add('hide');
+            }, 3000);  // Hide each message after 3 seconds
+        });
+    };
+</script>
+{% endblock %}

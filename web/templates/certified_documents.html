@@ -1,0 +1,95 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Certified Documents{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media (min-width: 768px) {
+        .sidebar {
+            background-color: #233040; /* Darker shade of charcoal */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    body {
+        background-color: #36454F; /* Charcoal */
+        font-size: 0.9rem;
+        font-family: Arial, sans-serif;
+    }
+    .sidebar {
+        background-color: #233040; /* Darker shade of charcoal */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar .nav-link {
+        color: #ffffff;
+    }
+    .sidebar .nav-link.active {
+        background-color: #4a6fa5; /* Active link color */
+        color: #ffffff;
+    }
+    .sidebar .nav-link:hover {
+        background-color: #4a6fa5; /* Hover link color */
+    }
+    .logout-link {
+        margin-top: auto;
+    }
+    main {
+        color: #ffffff;
+    }
+    .card {
+        background-color: #2b3e50; /* Dark card background */
+        border: none;
+    }
+    .card .card-title, .card .card-subtitle, .card .card-text {
+        color: #ffffff;
+    }
+    .card-body {
+        background-color: #2b3e50; /* Dark card body background */
+    }
+    .border-bottom {
+        border-bottom: 1px solid #4a6fa5; /* Border color */
+    }
+    .unread-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: red;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block auth_content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Certified Documents</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"></h5>
+                <p class="card-text">---------------------------------------</p>
+                <div class="grid w-full grid-cols-1 lg:grid-cols-3 gap-4 py-4">
+                    <ul>
+                        {% for certified_document in certified_documents %}
+                        <li><a href="{{ url_for('views.download_document', document_id=certified_document.id) }}">Download - {{ certified_document.name }}</a></li>
+                        {% else %}
+                        <li>No documents available for download.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+{% endblock %}
+
+
