@@ -2,13 +2,21 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SelectField, SubmitField, TextAreaField, FileField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms.validators import DataRequired, Email, Length, EqualTo
 from wtforms_sqlalchemy.fields import QuerySelectField
 from .models import User
 
 class CustomPasswordResetForm(FlaskForm):
     id_number = StringField('ID Number', validators=[DataRequired(), Length(max=100)])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=254)])
+
+class PasswordResetForm(FlaskForm):
+    password = PasswordField('New Password', validators=[
+        DataRequired(),
+        Length(min=5, max=100),  # Adjust min and max values based on your security policy
+        EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat Password', validators=[DataRequired()])
 
 class SignupForm(FlaskForm):
     id_number = StringField('ID Number', validators=[DataRequired()])
@@ -21,6 +29,8 @@ class SignupForm(FlaskForm):
 class ProfileForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
     contact_number = StringField('Contact Number', validators=[DataRequired()])
+    existing_password = PasswordField('Existing Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
 
 class UpdateProfileForm(FlaskForm):
     id = StringField('ID Number',render_kw={'readonly': True}, validators=[DataRequired()])

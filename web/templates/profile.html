@@ -83,6 +83,54 @@
         border-radius: 5px;
         z-index: 9999;
     }
+    .password-strength-meter-very-weak {
+        color: darkred;
+    }
+    .password-strength-meter-weak {
+        color: red;
+    }
+
+    .password-strength-meter-moderate {
+        color: orange;
+    }
+
+    .password-strength-meter-strong {
+        color: green;
+    }
+    .password-strength-meter-very-strong {
+        color: darkgreen;
+    }
+    .border-bottom {
+        border-bottom: 1px solid #4a6fa5; /* Border color */
+    }
+    .message-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: .25rem;
+    }
+    
+    .message-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: .25rem;
+    }
+    .message-popup {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%);
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 9999;
+    }
     .hide {
         display: none;
     }
@@ -127,15 +175,19 @@
                         <!-- Existing Password Field (hidden by default) -->
                         <div class="form-group" id="existingPasswordGroup" style="display: none;">
                             <label for="existing_password"><strong>Existing Password:</strong></label>
-                            <input type="password" name="existing_password" id="existing_password" class="form-control">
+                            <input type="password" name="existing_password" id="existing_password" class="form-control" placeholder="Enter existing password">
                         </div>
                         
                         <!-- New Password Field (hidden by default) -->
                         <div class="form-group" id="newPasswordGroup" style="display: none;">
                             <label for="new_password"><strong>New Password:</strong></label>
-                            <input type="password" name="new_password" id="new_password" class="form-control">
+                            <input type="password" name="new_password" id="new_password" class="form-control" placeholder="Enter new password">
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility()">
+                                <i class="bi bi-eye" id="showPasswordBtn"></i>
+                            </button>
                         </div>
-                        
+                        <div id="password-strength-meter" class="mt-2"></div> 
+
                         <button type="submit" class="btn btn-primary">Update</button>
                     </form>
                 </div>
@@ -157,4 +209,66 @@ function togglePasswordFields() {
         newPasswordGroup.style.display = "none";
     }
 }
+
+function togglePasswordVisibility() {
+    var passwordInput = document.getElementById('new_password');
+    var showPasswordBtn = document.getElementById('showPasswordBtn');
+
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        showPasswordBtn.classList.remove('bi-eye');
+        showPasswordBtn.classList.add('bi-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        showPasswordBtn.classList.remove('bi-eye-slash');
+        showPasswordBtn.classList.add('bi-eye');
+    }
+}
+document.getElementById('new_password').addEventListener('input', function () {
+    var newPassword = this.value;
+    updatePasswordStrength(newPassword);
+});
+function updatePasswordStrength(new_password) {
+    var strengthMeter = document.getElementById('password-strength-meter');
+
+    var strength = 0;
+    if (new_password.length >= 8) strength++;
+    if (new_password.match(/[a-z]/)) strength++;
+    if (new_password.match(/[A-Z]/)) strength++;
+    if (new_password.match(/[0-9]/)) strength++;
+    if (new_password.match(/[!@#$%^&*()_+]/)) strength++;
+
+    var strengthText = '';
+    var strengthClass = '';
+    switch (strength) {
+        case 0:
+        case 1:
+            strengthText = 'Very Weak';
+            strengthClass = 'password-strength-meter-very-weak';
+            break;
+        case 2:
+            strengthText = 'Weak';
+            strengthClass = 'password-strength-meter-weak';
+            break;
+        case 3:
+            strengthText = 'Moderate';
+            strengthClass = 'password-strength-meter-moderate';
+            break;
+        case 4:
+            strengthText = 'Strong';
+            strengthClass = 'password-strength-meter-strong';
+            break;
+        case 5:
+            strengthText = 'Very Strong';
+            strengthClass = 'password-strength-meter-very-strong';
+            break;
+    }
+    strengthMeter.innerText = 'Password Strength: ' + strengthText;
+    strengthMeter.className = strengthClass;
+    strengthMeter.innerText = 'Password Strength: ' + strengthText;
+    strengthMeter.className = strengthClass;
+}
+</script>
+{% endblock %}
+{% block extra_js %}
 {% endblock %}

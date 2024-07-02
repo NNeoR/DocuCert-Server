@@ -36,18 +36,18 @@ def dashboard():
     user = User.query.filter_by(username=current_user.username).first()
     user_profile = UserProfile.query.filter_by(user_id=user.id).first()
     #concate user first name and last name
-    full_name = user_profile.first_name + ' ' + user_profile.last_name
+    full_name = f'{user_profile.first_name} {user_profile.last_name}'
     user_name = user.username
     total_users = User.query.count()
     total_requests = DocumentCertificationRequest.query.count()
     messages_sent_count = Message.query.filter_by(sender_id=user.id).count()
-    
+
     certified_requests = DocumentCertificationRequest.query.filter_by(user_id=user.id,is_certified=True).count()
     requests = DocumentCertificationRequest.query.filter_by(user_id=user.id).count()
     request_ids = DocumentCertificationRequest.query.filter_by(user_id=user.id).all()
     certified_documents = CertifiedDocument.query.filter(CertifiedDocument.certification_request_id.in_([request.id for request in request_ids])).count()
     unread_messages_count = Message.query.filter_by(recipient_id=user.id, is_read=False).count()
-    
+
     context = {
         'user': user,
         'total_users': total_users,
@@ -98,7 +98,7 @@ def document_certification():
                 return document_certification_subview()
         else:
             flash('The original document must be a PDF or a PNG', 'error')
-            return redirect(url_for('document_certification_view'))
+            return redirect(url_for('views.document_certification_view'))
         
         stamp_image_path = os.path.join(current_app.root_path, 'static', 'certifiedStamp.png')
         stamp_image = Image.open(stamp_image_path)
@@ -312,17 +312,15 @@ def download_document(document_id):
 @views.route('/send_message', methods=['GET', 'POST'])
 @login_required
 def send_message():
-    if not current_user.type == 'Admin':
-        return redirect(url_for('dashboard'))
+    if current_user.type != 'Admin':
+        return redirect(url_for('views.dashboard'))
 
     form = MessageForm()
     if form.validate_on_submit():
         recipient = form.recipient.data
         subject = form.subject.data
         body = form.body.data
-        send_to_all = form.send_to_all.data
-
-        if send_to_all:
+        if send_to_all := form.send_to_all.data:
             users = User.query.all()
             for user in users:
                 message = Message(
@@ -336,7 +334,6 @@ def send_message():
                 email = user.UserProfile.email
                 send_message_to_email(email, subject, body)
         else:
-            
             if recipient:
                 user = User.query.get(recipient.id)
                 message = Message(
@@ -388,8 +385,9 @@ def inbox():
 @views.route('/message/<int:message_id>')
 @login_required
 def message_detail(message_id):
-    message = Message.query.filter_by(id=message_id, recipient_id=current_user.id).first()
-    if message:
+    if message := Message.query.filter_by(
+        id=message_id, recipient_id=current_user.id
+    ).first():
         message.is_read = True
         db.session.commit()
         return render_template('message_detail.html', message=message)
@@ -402,11 +400,21 @@ def message_detail(message_id):
 @login_required
 def profile():
     user_profile = UserProfile.query.filter_by(user_id=current_user.id).first()
+    user = User.query.filter_by(id=current_user.id).first()
     print(request.form)  # Print POST data for debugging
     if request.method == 'POST':
         profile_form = ProfileForm(request.form, obj=user_profile)
         if profile_form.validate_on_submit():
             profile_form.populate_obj(user_profile)
+            if(request.form.get('updatePasswordCheck') =='on'):
+
+                if 'existing_password' in request.form and not check_password_hash(user.password, request.form['existing_password']):
+                    flash('Incorrect password', 'error')
+                    return redirect(url_for('views.profile'))
+                if 'new_password' in request.form and request.form['new_password']:
+                    user.password = generate_password_hash(request.form['new_password'])
+                    db.session.add(user)
+
             db.session.commit()
             flash('Profile updated successfully.', 'success')
             return redirect(url_for('views.profile'))
@@ -414,12 +422,9 @@ def profile():
             print(profile_form.errors)  # Print form errors for debugging
     else:
         profile_form = ProfileForm(obj=user_profile)
-        
+
     gender = user_profile.gender
-    if gender == 'M':
-        title = 'Welcome Mr.'
-    else:   
-        title = 'Welcome Ms.'
+    title = 'Welcome Mr.' if gender == 'M' else 'Welcome Ms.'
     context = {
         'form': profile_form,
         'profile_form': profile_form,
@@ -433,35 +438,34 @@ def profile():
 @views.route('/create_user', methods=['GET', 'POST'])
 @login_required
 def create_user():
-    if current_user.type == 'Admin':
-        form = SignupForm()
-        if request.method == 'POST' and form.validate_on_submit():
-            
-            if not validate_id_number(form.id_number.data):
-                flash('Invalid ID number', 'error')
-                return render_template('create_user.html', form=form)
-            
-            new_user = User(username=form.id_number.data, password=generate_password_hash(form.password.data), type='Client')
-            db.session.add(new_user)
-            db.session.commit()
-
-            gender = determine_gender(form.id_number.data)
-            user_profile = UserProfile(
-                    id=form.id_number.data,
-                    gender=gender,
-                    first_name=form.first_name.data,
-                    last_name=form.last_name.data,
-                    email=form.email.data,
-                    contact_number=form.contact_number.data,
-                    user_id=new_user.id
-                )
-            db.session.add(user_profile)
-            db.session.commit()
-            flash('User created successfully!', 'success')
-            return redirect(url_for('views.user_management'))
-        return render_template('create_user.html', form=form)
-    else:
+    if current_user.type != 'Admin':
         return redirect(url_for('views.dashboard'))
+    form = SignupForm()
+    if request.method == 'POST' and form.validate_on_submit():
+
+        if not validate_id_number(form.id_number.data):
+            flash('Invalid ID number', 'error')
+            return render_template('create_user.html', form=form)
+
+        new_user = User(username=form.id_number.data, password=generate_password_hash(form.password.data), type='Client')
+        db.session.add(new_user)
+        db.session.commit()
+
+        gender = determine_gender(form.id_number.data)
+        user_profile = UserProfile(
+                id=form.id_number.data,
+                gender=gender,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                email=form.email.data,
+                contact_number=form.contact_number.data,
+                user_id=new_user.id
+            )
+        db.session.add(user_profile)
+        db.session.commit()
+        flash('User created successfully!', 'success')
+        return redirect(url_for('views.user_management'))
+    return render_template('create_user.html', form=form)
 
 #Error handling
 #@views.app_errorhandler(404)

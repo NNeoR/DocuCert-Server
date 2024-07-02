@@ -52,6 +52,7 @@ class CertifiedDocument(db.Model):
     stamped_document = db.Column(db.LargeBinary)
     name = db.Column(db.String(255))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    expire_date = db.Column(db.DateTime)
 
 class Message(db.Model):
     __tablename__ = 'message'

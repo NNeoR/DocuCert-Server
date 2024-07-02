@@ -1,6 +1,8 @@
+from flask_migrate import Migrate
 from web import create_app, db
 
 app = create_app()
+migrate = Migrate(app, db)
 
 # Create the tables in the database
 with app.app_context():
