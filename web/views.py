@@ -1,4 +1,6 @@
 # routes.py
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -37,7 +39,6 @@ def dashboard():
     user_profile = UserProfile.query.filter_by(user_id=user.id).first()
     #concate user first name and last name
     full_name = f'{user_profile.first_name} {user_profile.last_name}'
-    user_name = user.username
     total_users = User.query.count()
     total_requests = DocumentCertificationRequest.query.count()
     messages_sent_count = Message.query.filter_by(sender_id=user.id).count()
@@ -119,6 +120,9 @@ def document_certification():
             stamped_document=output_image_io.getvalue(),
             name=document_copy.filename
         )
+        #create a timestamp of 3months period after creation
+        creation_time = datetime.now()
+        certified_document.expire_date = creation_time + relativedelta(months=3)
         #add and commit the certified document
         db.session.add(certified_document)
         db.session.commit()

@@ -1,5 +1,8 @@
 {
     "python.analysis.extraPaths": [
         "./DocuCert-ServerSys"
+    ],
+    "cSpell.words": [
+        "relativedelta"
     ]
 }

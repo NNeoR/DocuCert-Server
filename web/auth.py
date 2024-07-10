@@ -31,54 +31,59 @@ def logout():
 @auth.route('/reset_password', methods=['GET', 'POST'])
 def password_reset_view():
     # sourcery skip: merge-else-if-into-elif, move-assign-in-block, use-named-expression
-    form = CustomPasswordResetForm()
     if request.method == 'POST':
-        action = request.form.get('action')
         
-        if action == 'verify':
-            form = CustomPasswordResetForm(request.form)
-            if form.validate_on_submit():
-                # Verify the account here
-                user_id = form.user_id.data
-                email = form.email.data
-                user = User.query.filter_by(id=user_id).first()
-                if user:
-                    
-                    user_profile = UserProfile.query.filter_by(email=email).first()
-                    if user_profile:
-                        session['user_verified'] = True
-                        session['user_id'] = user_id
-                        
-                        flash('Account verified. Please reset your password.', 'success')
-                    else:
-                        flash('Email specified is incorrect.', 'error')
-                    return redirect(url_for('auth.reset_password'))  # Redirect to the same page to show reset form
-                else:
-                    flash('User ID specified not found. Please create an account.', 'error')
-            else:
-                flash('Invalid input.', 'error')
-        elif action == 'reset' and session.get('user_verified'):
-            # Handle password reset
-            user_id = session.get('user_id')
-            user = User.query.filter_by(id=user_id).first()
+        form = CustomPasswordResetForm(request.form)
+        if form.validate_on_submit():
+            # Verify the account here
+            user_id = form.id_number.data
+            email = form.email.data
+            user = User.query.filter_by(username=user_id).first()
             if user:
-                # Reset the user's password here
-                new_password = request.form.get('password')
-                # Assuming you have a method to set the password
-                user.set_password(new_password)
-                db.session.commit()
-                flash('Your password has been reset.', 'success')
-                return redirect(url_for('auth.login'))  # Redirect to login page
+                
+                user_profile = UserProfile.query.filter_by(email=email).first()
+                if user_profile:
+                    session['user_verified'] = True
+                    session['user_id'] = user_id
+                    
+                    flash('Account verified. Please reset your password.', 'success')
+                    return redirect(url_for('auth.update_password'))
+                else:
+                    flash('Email specified is incorrect.', 'error')
+                return redirect(url_for('auth.reset_password'))  # Redirect to the same page to show reset form
             else:
-                flash('User not found.', 'error')
-    else:
-        # Determine which form to display based on session
-        if session.get('user_verified'):
-            form = CustomPasswordResetForm()  # Assuming this is the password reset form
+                flash('User ID specified not found. Please create an account.', 'error')
+                render_template('reset_password.html', form=form)
         else:
-            form = PasswordResetForm()
-    
+            flash('Invalid input.', 'error')
+            render_template('reset_password.html', form=form)
+
+    else:
+        form = CustomPasswordResetForm()  # Assuming this is the password reset form
+        
     return render_template('reset_password.html', form=form)
+
+@auth.route('/update_password', methods=['GET', 'POST'])
+def update_password():
+    form = PasswordResetForm(request.form if request.method == 'POST' else None)
+    user_id = session.get('user_id')
+    user = User.query.filter_by(username=user_id).first()
+
+    context = {
+        'form': form
+    }
+
+    if request.method == 'POST' and form.validate_on_submit():
+        if user:
+            new_password = request.form.get('password')
+            user.password = generate_password_hash(new_password) 
+            db.session.commit()
+            flash('Your password has been reset.', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('User not found.', 'error')
+
+    return render_template('update_password.html', **context)
 
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
