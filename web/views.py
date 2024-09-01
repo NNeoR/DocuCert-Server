@@ -74,7 +74,7 @@ def document_certification():
         
         if not document_copy.filename.endswith('.pdf'):
             flash('The document copy must be a PDF', 'error')
-            return redirect(url_for('document_certification_view'))
+            return redirect(url_for('views.document_certification'))
         
         #RETRIEVE THE DATA FROM THE FILES
         document_copy_data = document_copy.read()
@@ -99,7 +99,7 @@ def document_certification():
                 return document_certification_subview()
         else:
             flash('The original document must be a PDF or a PNG', 'error')
-            return redirect(url_for('views.document_certification_view'))
+            return redirect(url_for('views.document_certification'))
         
         stamp_image_path = os.path.join(current_app.root_path, 'static', 'certifiedStamp.png')
         stamp_image = Image.open(stamp_image_path)
@@ -232,17 +232,16 @@ def send_document_to_email(email, document):
 @login_required
 def user_management():
     
-    if current_user.is_authenticated and current_user.type == 'Admin':
-        users = UserProfile.query.all()
-        #define list of csrf tokens
-        csrf_tokens = [generate_csrf(), generate_csrf()]
-        context = {
-            'csrf_tokens': csrf_tokens,
-            'users': users
-        }
-        return render_template('user_management.html', **context)
-    else:
+    if not current_user.is_authenticated or current_user.type != 'Admin':
         return redirect(url_for('views.dashboard'))
+    users = UserProfile.query.all()
+    #define list of csrf tokens
+    csrf_tokens = [generate_csrf(), generate_csrf()]
+    context = {
+        'csrf_tokens': csrf_tokens,
+        'users': users
+    }
+    return render_template('user_management.html', **context)
     
 @views.route('/update_user/<string:id_number>/', methods=['GET', 'POST'])
 @login_required

@@ -88,7 +88,7 @@
                                 {{ 'bg-dark text-light' if not message.is_read else 'bg-secondary text-light' }}">
                                 <h5 class="mb-1">{{ message.subject }}</h5>
                                 <p class="mb-1">{{ message.body|truncate(20) }}</p>
-                                <small>From: {{ message.sender.username }}</small>
+                                <small>From: {{ message.sender.UserProfile[0].first_name }} {{ message.sender.UserProfile[0].last_name }}</small>
                             </a>
                         {% else %}
                             <div class="alert alert-info">No messages found.</div>

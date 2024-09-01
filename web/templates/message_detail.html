@@ -30,7 +30,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ message.subject }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">From: {{ message.sender.username }}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">From: {{ message.sender.UserProfile[0].first_name }} {{ message.sender.UserProfile[0].last_name }}</h6>
             <p class="card-text">{{ message.body }}</p>
             <a href="{{ url_for('views.inbox') }}" class="btn btn-primary">Back to Inbox</a>
         </div>

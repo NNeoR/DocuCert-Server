@@ -123,19 +123,19 @@
                                 <th>ID Number</th>
                                 <th>Full Name</th>
                                 <th>Gender</th>
-                                <th>Contact Method</th>
-                                <th>Contact Info</th>
+                                <th>Email</th>
+                                <th>Contact Number</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for user in users %}
                             <tr>
-                                <td>{{ user.id_number }}</td>
-                                <td>{{ user.full_name }}</td>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
                                 <td>{{ user.gender }}</td>
-                                <td>{{ user.contact_method }}</td>
-                                <td>{{ user.contact_info }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.contact_number }}</td>
                                 <td>
                                     <form method="POST" action="{{ url_for('views.update_user', id_number=user.id) }}">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_tokens[0] }}">
